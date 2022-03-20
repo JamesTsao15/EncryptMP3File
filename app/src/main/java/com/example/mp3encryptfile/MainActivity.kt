@@ -2,6 +2,7 @@ package com.example.mp3encryptfile
 
 import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
@@ -9,9 +10,13 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
-import java.io.ByteArrayOutputStream
-import java.io.FileInputStream
+import java.io.File
+import java.io.IOException
+import java.nio.file.Files
+import java.nio.file.Paths
+import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private lateinit var btn_chooseFile:Button
@@ -37,6 +42,7 @@ class MainActivity : AppCompatActivity() {
         btn_keySetting=findViewById(R.id.button_keySetting)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
         btn_keySetting.setOnClickListener {
@@ -66,20 +72,21 @@ class MainActivity : AppCompatActivity() {
             Log.e("JAMES",AESKEY)
             if(AudioPath!="" && AESKEY!=""){
                 Log.e("JAMES","AudioPathAndAesKeyIsNotNull")
-                Log.e("JAMES",convertMP3ToByteArray(AudioPath).toString())
+                val byteArray=convertMP3ToByteArray(AudioPath)
+                Log.e("JAMES",Arrays.toString(byteArray))
             }
         }
     }
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun convertMP3ToByteArray(Audio_path:String):ByteArray{
-        val fis:FileInputStream=FileInputStream(Audio_path)
-        val bos:ByteArrayOutputStream= ByteArrayOutputStream()
-        val b:ByteArray = ByteArray(1024)
-        var readNum=fis.read(b)
-        while(readNum!=-1){
-            bos.write(b,0,readNum)
+        try {
+            val file =File(Audio_path)
+            val bytes= Files.readAllBytes(file.toPath())
+            return bytes
+        }catch (e:IOException){
+            e.printStackTrace()
         }
-        val bytes:ByteArray=bos.toByteArray()
-        return bytes
+        return ByteArray(0)
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
