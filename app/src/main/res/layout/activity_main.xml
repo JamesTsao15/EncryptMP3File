@@ -11,34 +11,34 @@
         android:layout_width="128dp"
         android:layout_height="49dp"
         android:layout_marginStart="156dp"
-        android:layout_marginTop="224dp"
+        android:layout_marginTop="92dp"
         android:layout_marginEnd="150dp"
         android:text="選擇音訊檔案"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.652"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/button_keySetting" />
 
     <EditText
-        android:id="@+id/editTextTextKeyNumber"
-        android:layout_width="275dp"
-        android:layout_height="49dp"
+        android:id="@+id/editTextTextIVAES"
+        android:layout_width="287dp"
+        android:layout_height="53dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="84dp"
         android:ems="10"
-        android:hint="請輸入加密key(16為英數字混合)"
+        android:hint="請輸入IV_AES(16位英數字混合)"
         android:inputType="textPersonName"
-        app:layout_constraintStart_toEndOf="@+id/textView_key"
+        app:layout_constraintStart_toEndOf="@+id/textView_IvAES"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="TouchTargetSizeCheck" />
 
     <TextView
-        android:id="@+id/textView_key"
+        android:id="@+id/textView_IvAES"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="52dp"
+        android:layout_marginStart="28dp"
         android:layout_marginTop="100dp"
-        android:text="Key:"
+        android:text="IvAES:"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -67,10 +67,33 @@
         android:layout_width="128dp"
         android:layout_height="49dp"
         android:layout_marginStart="158dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginTop="88dp"
         android:layout_marginEnd="159dp"
         android:text="設定KEY"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editTextTextKeyNumber" />
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextAES_Key" />
+
+    <TextView
+        android:id="@+id/textView_AesKey"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="23dp"
+        android:layout_marginTop="40dp"
+        android:text="AESKey:"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextIVAES" />
+
+    <EditText
+        android:id="@+id/editTextTextAES_Key"
+        android:layout_width="283dp"
+        android:layout_height="56dp"
+        android:layout_marginStart="2dp"
+        android:layout_marginTop="20dp"
+        android:ems="10"
+        android:hint="請輸入AES_KEY(32位的英數組合)"
+        android:inputType="textPersonName"
+        app:layout_constraintStart_toEndOf="@+id/textView_AesKey"
+        app:layout_constraintTop_toBottomOf="@+id/editTextTextIVAES" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
