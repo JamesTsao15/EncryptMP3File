@@ -11,7 +11,7 @@
         android:layout_width="128dp"
         android:layout_height="49dp"
         android:layout_marginStart="156dp"
-        android:layout_marginTop="92dp"
+        android:layout_marginTop="36dp"
         android:layout_marginEnd="150dp"
         android:text="選擇音訊檔案"
         app:layout_constraintEnd_toEndOf="parent"
@@ -67,7 +67,7 @@
         android:layout_width="128dp"
         android:layout_height="49dp"
         android:layout_marginStart="158dp"
-        android:layout_marginTop="88dp"
+        android:layout_marginTop="40dp"
         android:layout_marginEnd="159dp"
         android:text="設定KEY"
         app:layout_constraintEnd_toEndOf="parent"
@@ -95,5 +95,15 @@
         android:inputType="textPersonName"
         app:layout_constraintStart_toEndOf="@+id/textView_AesKey"
         app:layout_constraintTop_toBottomOf="@+id/editTextTextIVAES" />
+
+    <Button
+        android:id="@+id/button_KeyStoreInTextFile"
+        android:layout_width="128dp"
+        android:layout_height="76dp"
+        android:layout_marginStart="144dp"
+        android:layout_marginTop="47dp"
+        android:text="輸出KEY至text檔"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/button_encrypt" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

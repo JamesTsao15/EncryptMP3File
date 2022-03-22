@@ -19,6 +19,7 @@ import java.io.IOException
 import java.lang.Exception
 import java.nio.file.Files
 import java.nio.file.Paths
+import java.security.KeyStore
 import java.security.spec.AlgorithmParameterSpec
 import java.util.*
 import javax.crypto.Cipher
@@ -32,22 +33,14 @@ class MainActivity : AppCompatActivity() {
     private lateinit var tv_FileName:TextView
     private lateinit var btn_encryptFile:Button
     private lateinit var btn_keySetting:Button
+    private lateinit var btn_keyStoreTextFile:Button
     private var IVAES=""
     private var AESKEY=""
     private var AudioPath=""
     private var IVAES_Is_Set_Sucessful=false
     private var AESKEY_Is_Set_Sucessful=false
     private val READ_PERMISSION_CODE=100
-    private val isExternalStorageWritable: Boolean
-        get() {
-            val state = Environment.getExternalStorageState()
-            return Environment.MEDIA_MOUNTED == state
-        }
-    private val isExternalStorageReadable: Boolean
-        get() {
-            val state = Environment.getExternalStorageState()
-            return Environment.MEDIA_MOUNTED == state || Environment.MEDIA_MOUNTED_READ_ONLY == state
-        }
+
     private fun pick_Audio(){
         val uri=android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val audio_picker_intent=Intent(Intent.ACTION_PICK,uri)
@@ -62,16 +55,16 @@ class MainActivity : AppCompatActivity() {
         tv_FileName=findViewById(R.id.textView_fileName)
         btn_encryptFile=findViewById(R.id.button_encrypt)
         btn_keySetting=findViewById(R.id.button_keySetting)
+        btn_keyStoreTextFile=findViewById(R.id.button_KeyStoreInTextFile)
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
-
-        Log.e("JAMES",isExternalStorageReadable.toString())
-        Log.e("JAMES",isExternalStorageWritable.toString())
         btn_keySetting.setOnClickListener {
             Log.e("JAMES","onClick_btn_KeySetting")
+            IVAES_Is_Set_Sucessful=false
+            AESKEY_Is_Set_Sucessful=false
             if(editText_IVAES.text.length==16){
                 IVAES=editText_IVAES.text.toString()
                 val imm:InputMethodManager=getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
@@ -98,8 +91,6 @@ class MainActivity : AppCompatActivity() {
             }
             if(IVAES_Is_Set_Sucessful && AESKEY_Is_Set_Sucessful){
                 Toast.makeText(this,"Key設定成功",Toast.LENGTH_SHORT).show()
-                IVAES_Is_Set_Sucessful=false
-                AESKEY_Is_Set_Sucessful=false
             }
         }
         btn_chooseFile.setOnClickListener {
@@ -125,6 +116,24 @@ class MainActivity : AppCompatActivity() {
                 if((byteArray_MP3 contentEquals byteArray_Mp3_Decrypt))Store_EncryptMP3(byteArray_MP3_Encrypt,"$encryptFileName.ssf")
                 else{
                     Toast.makeText(this,"加密失敗",Toast.LENGTH_SHORT).show()
+                }
+            }
+        }
+        btn_keyStoreTextFile.setOnClickListener {
+            if(AESKEY_Is_Set_Sucessful && IVAES_Is_Set_Sucessful){
+                Log.e("JAMES","onClick_storeKey")
+                val KeyStorePath=getExtermalStoragePublicDir("EncryptMP3_Key_Text").path
+                val f1=File(KeyStorePath,"IVAES.txt")
+                val f2=File(KeyStorePath,"KEY.txt")
+                try{
+                    val outStream_IVAES=FileOutputStream(f1)
+                    outStream_IVAES.write(IVAES.toByteArray())
+                    outStream_IVAES.close()
+                    val outputStream_KEY=FileOutputStream(f2)
+                    outputStream_KEY.write(AESKEY.toByteArray())
+                    outputStream_KEY.close()
+                }catch (e:Exception){
+                    e.printStackTrace()
                 }
             }
         }
