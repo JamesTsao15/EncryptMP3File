@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Environment
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.Button
@@ -13,9 +14,11 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.lang.Exception
 import java.nio.file.Files
+import java.nio.file.Paths
 import java.security.spec.AlgorithmParameterSpec
 import java.util.*
 import javax.crypto.Cipher
@@ -35,6 +38,16 @@ class MainActivity : AppCompatActivity() {
     private var IVAES_Is_Set_Sucessful=false
     private var AESKEY_Is_Set_Sucessful=false
     private val READ_PERMISSION_CODE=100
+    private val isExternalStorageWritable: Boolean
+        get() {
+            val state = Environment.getExternalStorageState()
+            return Environment.MEDIA_MOUNTED == state
+        }
+    private val isExternalStorageReadable: Boolean
+        get() {
+            val state = Environment.getExternalStorageState()
+            return Environment.MEDIA_MOUNTED == state || Environment.MEDIA_MOUNTED_READ_ONLY == state
+        }
     private fun pick_Audio(){
         val uri=android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
         val audio_picker_intent=Intent(Intent.ACTION_PICK,uri)
@@ -54,6 +67,9 @@ class MainActivity : AppCompatActivity() {
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onResume() {
         super.onResume()
+
+        Log.e("JAMES",isExternalStorageReadable.toString())
+        Log.e("JAMES",isExternalStorageWritable.toString())
         btn_keySetting.setOnClickListener {
             Log.e("JAMES","onClick_btn_KeySetting")
             if(editText_IVAES.text.length==16){
@@ -99,7 +115,17 @@ class MainActivity : AppCompatActivity() {
                 Log.e("JAMES",Arrays.toString(byteArray_MP3))
                 val byteArray_MP3_Encrypt=EncryptMP3ByAES(IVAES.toByteArray(),AESKEY.toByteArray(),byteArray_MP3)
                 Log.e("JAMES",Arrays.toString(byteArray_MP3_Encrypt))
-                Log.e("JAMES",Base64.getEncoder().encodeToString(byteArray_MP3_Encrypt))
+                val byteArray_Mp3_Decrypt=DecryptByteArrayToMp3(IVAES.toByteArray(),AESKEY.toByteArray(),byteArray_MP3_Encrypt)
+                Log.e("JAMES",Arrays.toString(byteArray_Mp3_Decrypt))
+                Log.e("JAMES",(byteArray_MP3 contentEquals byteArray_Mp3_Decrypt).toString())
+                val encryptFileName:String=AudioPath.replaceBeforeLast("/","")
+                                                    .replace("/","")
+                                                    .replaceAfter(".","")
+                                                    .replace(".","")
+                if((byteArray_MP3 contentEquals byteArray_Mp3_Decrypt))Store_EncryptMP3(byteArray_MP3_Encrypt,"$encryptFileName.ssf")
+                else{
+                    Toast.makeText(this,"加密失敗",Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -118,13 +144,58 @@ class MainActivity : AppCompatActivity() {
         try{
             val myAlgorithmParameterSpec:AlgorithmParameterSpec=IvParameterSpec(ivAes)
             val mySecretKeySpec=SecretKeySpec(Aeskey,"AES")
-            var myCipher:Cipher= Cipher.getInstance("AES/CBC/PKCS5Padding")
+            val myCipher:Cipher= Cipher.getInstance("AES/CBC/PKCS5Padding")
             myCipher.init(Cipher.ENCRYPT_MODE,mySecretKeySpec,myAlgorithmParameterSpec)
             return myCipher.doFinal(Mp3ByteArray)
         }catch (e:Exception){
             e.printStackTrace()
         }
         return  ByteArray(0)
+    }
+    private fun DecryptByteArrayToMp3(ivAes: ByteArray,Aeskey: ByteArray,Mp3ByteArray_Encrypt: ByteArray):ByteArray{
+        try {
+            val myAlgorithmParameterSpec:AlgorithmParameterSpec=IvParameterSpec(ivAes)
+            val mySecretKeySpec=SecretKeySpec(Aeskey,"AES")
+            val myCipher:Cipher= Cipher.getInstance("AES/CBC/PKCS5Padding")
+            myCipher.init(Cipher.DECRYPT_MODE,mySecretKeySpec,myAlgorithmParameterSpec)
+            return myCipher.doFinal(Mp3ByteArray_Encrypt)
+        }
+        catch (e:Exception){
+            e.printStackTrace()
+        }
+        return ByteArray(0)
+    }
+    private fun getExtermalStoragePublicDir(FolderName:String):File{
+        val file=Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS)
+        if(!file.exists()){
+
+            file.mkdir()
+        }
+        else{
+            Log.e("JAMES","inLoopFile")
+            val f=File(file,FolderName)
+            if(!f.exists()){
+                Log.e("JAMES","inLoop_f")
+                f.mkdir()
+                return f
+            }
+            else{
+                return  File(file,FolderName)
+            }
+        }
+        return  File(file,FolderName)
+    }
+    private fun Store_EncryptMP3(EncryptedByteArray: ByteArray,filename:String){
+        val path=getExtermalStoragePublicDir("EncryptMP3").path
+        val f=File(path,filename)
+        try{
+            val outStream=FileOutputStream(f)
+            outStream.write(EncryptedByteArray)
+            outStream.close()
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
+
     }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
@@ -133,7 +204,7 @@ class MainActivity : AppCompatActivity() {
             val uriPathHelper=URIPathHelper()
             val audioPath= uri?.let { uriPathHelper.getPath(this, it) }
             AudioPath=audioPath.toString()
-            tv_FileName.text="選擇音檔:$AudioPath"
+            tv_FileName.text="目前選擇音檔為:${AudioPath.replaceBeforeLast("/","").replace("/","")}"
         }
     }
 }
