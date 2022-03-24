@@ -113,7 +113,7 @@ class MainActivity : AppCompatActivity() {
                                                     .replace("/","")
                                                     .replaceAfter(".","")
                                                     .replace(".","")
-                if((byteArray_MP3 contentEquals byteArray_Mp3_Decrypt))Store_EncryptMP3(byteArray_MP3_Encrypt,"$encryptFileName.ssf")
+                if((byteArray_MP3 contentEquals byteArray_Mp3_Decrypt))Store_EncryptMP3(byteArray_MP3_Encrypt,"$encryptFileName.mp3")
                 else{
                     Toast.makeText(this,"加密失敗",Toast.LENGTH_SHORT).show()
                 }
@@ -123,8 +123,8 @@ class MainActivity : AppCompatActivity() {
             if(AESKEY_Is_Set_Sucessful && IVAES_Is_Set_Sucessful){
                 Log.e("JAMES","onClick_storeKey")
                 val KeyStorePath=getExtermalStoragePublicDir("EncryptMP3_Key_Text").path
-                val f1=File(KeyStorePath,"IVAES.txt")
-                val f2=File(KeyStorePath,"KEY.txt")
+                val f1=File(KeyStorePath,"IVAES.jpg")
+                val f2=File(KeyStorePath,"KEY.jpg")
                 try{
                     val outStream_IVAES=FileOutputStream(f1)
                     outStream_IVAES.write(IVAES.toByteArray())
