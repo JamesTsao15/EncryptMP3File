@@ -3,7 +3,7 @@
 
 程式筆記:
 
-獲取手機上的audio檔選擇回傳uri:
+1.獲取手機上的audio檔選擇回傳uri:
 
     private fun pick_Audio(){
         val uri=android.provider.MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
@@ -17,7 +17,7 @@
         }
     }
 
-加密MP3前轉byteArray作法:
+2.加密MP3前轉byteArray作法:
 
     private fun convertMP3ToByteArray(Audio_path:String):ByteArray{
           try {
@@ -30,7 +30,7 @@
           return ByteArray(0)
       }
       
-AES加密ByteArray:
+3.AES加密ByteArray:
 
     private fun EncryptMP3ByAES(ivAes:ByteArray,Aeskey:ByteArray,Mp3ByteArray:ByteArray):ByteArray{
         try{
@@ -45,7 +45,7 @@ AES加密ByteArray:
         return  ByteArray(0)
     }
         
-AES解密ByteArray:
+4.AES解密ByteArray:
 
     private fun DecryptByteArrayToMp3(ivAes: ByteArray,Aeskey: ByteArray,Mp3ByteArray_Encrypt: ByteArray):ByteArray{
         try {
@@ -61,7 +61,7 @@ AES解密ByteArray:
         return ByteArray(0)
     }
     
- 儲存加密資料:
+5.儲存加密資料:
  
  
      private fun getExtermalStoragePublicDir(FolderName:String):File{
@@ -97,7 +97,7 @@ AES解密ByteArray:
             }
 
         }
-  儲存KEY在JPG檔:
+6.儲存KEY在JPG檔:
   
   原因:
   
